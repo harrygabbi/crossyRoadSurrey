@@ -26,8 +26,6 @@ public class PlayState extends State{
     private final float charHeight = 70;
     private Vector<Bus> bus;
     private Vector<Platform> woods;
-
-
     private int[] map;
 
     public PlayState(GameStateManager gsm) {
@@ -36,7 +34,7 @@ public class PlayState extends State{
         bird = new character(charX, charY);
         background = new Background();
         cam.setToOrtho(false,main.WIDTH,main.HEIGHT);
-        map = new int[]{0, 1, 1, 0, 0, 2};
+        map = new int[]{0, 2, 1, 2, 1, 0};
         bus = new Vector<Bus>();
         woods = new Vector<Platform>();
         for(int i = 0 ; i<map.length; i++){
@@ -46,9 +44,9 @@ public class PlayState extends State{
                 bus.add(newBus);
             }
             if(map[i] == 2){
-                float randomxpos = -500 + random.nextInt(401);
-                float randomwidth = 10 + random.nextInt(180);
-                Platform newplat = new Platform(0,i*71,randomwidth);
+                float randomwidth = 60 + random.nextInt(140);
+                float randomxpos = -randomwidth + random.nextInt(200);
+                Platform newplat = new Platform(randomxpos,i*70,randomwidth);
                 woods.add(newplat);
             }
         }
@@ -89,11 +87,11 @@ public class PlayState extends State{
         }
 
         for(Platform w:woods) {
-            w.move(dt * 100);
-            if (w.collides(bird.getBounds())){
-                gsm.set(new MenuState(gsm));
-            }
+            w.move(dt * 30);
+            if ((w.getYpos()==bird.getPosition().y) && (bird.getPosition().x <= (w.getXpos() - 20) || (bird.getPosition().x + 30) >=( w.getXpos() + w.getWidth())))
+                    gsm.set(new MenuState(gsm));
         }
+
 
     }
 

@@ -16,7 +16,7 @@ public class Platform {
     public Platform(float x , float y,float width){
         wood = new Texture("wood.jpeg");
         this.width = width;
-        bounds = new Rectangle(x,y,width + 10,70);
+        bounds = new Rectangle(x,y,width,70);
         xpos = x;
         ypos = y;
     }
