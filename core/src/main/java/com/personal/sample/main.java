@@ -14,7 +14,7 @@ public class main extends ApplicationAdapter {
     private Texture backgroundImage;
     private Texture character;
     public static final int WIDTH = 640;
-    public static final int HEIGHT = 480;
+    public static final int HEIGHT = 420;
     public static final String TITLE = "crossy road Surrey";
     private float charX = 480;
     private float charY = 400;
