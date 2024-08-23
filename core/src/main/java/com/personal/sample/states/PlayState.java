@@ -88,8 +88,14 @@ public class PlayState extends State{
 
         for(Platform w:woods) {
             w.move(dt * 30);
-            if ((w.getYpos()==bird.getPosition().y) && (bird.getPosition().x <= (w.getXpos() - 20) || (bird.getPosition().x + 30) >=( w.getXpos() + w.getWidth())))
+            if ((w.getYpos()==bird.getPosition().y)) {
+
+                if(bird.getPosition().x <= (w.getXpos() - 30) || (bird.getPosition().x + 30) >=( w.getXpos() + w.getWidth())) {
                     gsm.set(new MenuState(gsm));
+                }
+                charX += (dt*30);
+
+            }
         }
 
 
