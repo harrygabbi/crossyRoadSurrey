@@ -85,6 +85,8 @@ public class PlayState extends State {
     public void update(float dt) {
         handleInput();
 
+        bird.getTexture()
+
         for (Bus b : bus) {
             b.move(dt * busvelocity);
             if (b.collide(bird.getBounds())) {
