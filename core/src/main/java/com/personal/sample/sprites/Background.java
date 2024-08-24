@@ -7,7 +7,8 @@ public class Background {
     private Texture roadTexture;
     private Texture waterTexture;
     private Texture blackbackground;
-    private int[] map;
+    private Texture TrainTrack;
+    //private int[] map;
 
 
     public Texture getBlackbackground() {
@@ -19,9 +20,10 @@ public class Background {
         roadTexture = new Texture("road.jpeg");
         waterTexture = new Texture("water.jpeg");
         blackbackground = new Texture("background.jpg");
+        TrainTrack = new Texture("trainTrack.jpeg");
 
         // Example map, where 0 is grass, 1 is road, 2 is water
-        map = new int[]{0, 0, 1, 2, 1, 2};
+        //map = new int[]{0, 0, 1, 2, 1, 2};
     }
 
     public Texture getGrassTexture() {
@@ -35,4 +37,6 @@ public class Background {
     public Texture getWaterTexture() {
         return waterTexture;
     }
+
+    public Texture getTrainTrackTexture(){return TrainTrack;}
 }

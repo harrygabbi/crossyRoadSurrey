@@ -3,15 +3,14 @@ package com.personal.sample.states;
 import static com.badlogic.gdx.math.MathUtils.random;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.personal.sample.main;
 import com.personal.sample.sprites.Background;
 import com.personal.sample.sprites.Bus;
 import com.personal.sample.sprites.Platform;
 import com.personal.sample.sprites.character;
+import com.personal.sample.sprites.train;
 
-import java.util.Random;
 import java.util.Vector;
 
 public class PlayState extends State {
@@ -24,15 +23,17 @@ public class PlayState extends State {
     private final float charHeight = 70;
     private Vector<Bus> bus;
     private Vector<Platform> woods;
+    private Vector<train> trains;
     private int[] map;
     private float busvelocity = 50;
     private float woodvelocity = 30;
+    private float trainvelocity = 100;
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
 
         // Set initial bird position to bottom middle of the screen
-        charX = main.WIDTH / 2 - charWidth / 2;
+        charX = (float) main.WIDTH / 2 - charWidth / 2;
         charY = 0;
         bird = new character(charX, charY);
         background = new Background();
@@ -41,9 +42,10 @@ public class PlayState extends State {
         // Set camera to follow the bird initially
         cam.position.set(charX + charWidth / 2, charY + charHeight / 2, 0);
 
-        map = new int[]{0, 2, 1, 2, 1, 0};
+        map = new int[]{0, 2, 3, 2, 1, 0};
         bus = new Vector<>();
         woods = new Vector<>();
+        trains = new Vector<>();
         for (int i = 0; i < map.length; i++) {
             if (map[i] == 1) {
                 int randomNumber = -500 + random.nextInt(401);
@@ -56,6 +58,12 @@ public class PlayState extends State {
                 Platform newplat = new Platform(randomxpos, i * 70, randomwidth);
                 woods.add(newplat);
             }
+            if (map[i] == 3) {
+                int randomNumber = -500 + random.nextInt(401);
+                train newtrain = new train(randomNumber, i * 71);
+                trains.add(newtrain);
+            }
+
         }
     }
 
@@ -88,6 +96,13 @@ public class PlayState extends State {
         for (Bus b : bus) {
             b.move(dt * busvelocity);
             if (b.collide(bird.getBounds())) {
+                gsm.set(new GameOverState(gsm));
+            }
+        }
+
+        for (train t : trains) {
+            t.move(dt * trainvelocity);
+            if (t.collide(bird.getBounds())) {
                 gsm.set(new GameOverState(gsm));
             }
         }
@@ -134,6 +149,9 @@ public class PlayState extends State {
                     sb.draw(background.getWaterTexture(), 0, x * 70, Gdx.graphics.getWidth(), 69);
                     sb.draw(background.getBlackbackground(), 0, x * 69 + 1, Gdx.graphics.getWidth(), 1);
                     break;
+                case 3:
+                    sb.draw(background.getTrainTrackTexture(), 0, x * 70, Gdx.graphics.getWidth(), 69);
+                    sb.draw(background.getBlackbackground(), 0, x * 69 + 1, Gdx.graphics.getWidth(), 1);
             }
         }
 
@@ -143,7 +161,9 @@ public class PlayState extends State {
         for (Platform w : woods) {
             sb.draw(w.getWood(), w.getXpos(), w.getYpos(), w.getWidth(), 65);
         }
-
+        for (train t : trains) {
+            sb.draw(t.getTrain(), t.getxPos(), t.getyPos(), 350, 60);
+        }
         sb.draw(bird.getTexture(), bird.getPosition().x, bird.getPosition().y, charWidth, charHeight);
         sb.end();
     }
