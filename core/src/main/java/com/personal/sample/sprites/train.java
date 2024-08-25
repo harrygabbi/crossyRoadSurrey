@@ -42,4 +42,8 @@ public class train {
         bounds.setPosition(xPos,yPos);
     }
 
+    public void dispose(){
+        train.dispose();
+    }
+
 }

@@ -45,4 +45,8 @@ public class character {
     public Rectangle getBounds() {
         return bounds;
     }
+
+    public void dispose() {
+        character.dispose();
+    }
 }

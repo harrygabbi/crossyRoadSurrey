@@ -55,6 +55,9 @@ public class Platform {
         xpos = x;
         bounds.setPosition(xpos+25,ypos);
     }
+    public void dispose() {
+        wood.dispose();
+    }
 
 }
 

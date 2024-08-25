@@ -3,16 +3,18 @@ package com.personal.sample.sprites;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 
-public class Bus {
-    public Texture getBus() {
-        return bus;
+import java.util.Random;
+
+public class Car {
+    public Texture getCar() {
+        return car;
     }
 
-    private Texture bus;
+    private Texture car;
     private Rectangle bounds;
     private float xPos;
     private float yPos;
-    private int busspeed;
+    private int carspeed;
 
     public float getxPos() {
         return xPos;
@@ -22,16 +24,16 @@ public class Bus {
         return yPos;
     }
 
-    public Bus(float x, float y, int speed){
-        bus = new Texture("Bus.png");
-        bounds = new Rectangle(x+10,y,180 - 10,60);
+    public Car(float x, float y, int speed){
+        car = new Texture("car.png");
+        bounds = new Rectangle(x +7,y,140 - 7,50);
         xPos = x;
-        yPos = y;
-        busspeed = speed;
+        yPos = y+10;
+        carspeed = speed;
     }
 
-    public int getBusspeed() {
-        return busspeed;
+    public int getCarspeed() {
+        return carspeed;
     }
 
     public boolean collide(Rectangle bird){
@@ -48,6 +50,7 @@ public class Bus {
         bounds.setPosition(xPos,yPos);
     }
     public void dispose() {
-        bus.dispose();
+        car.dispose();
     }
+
 }

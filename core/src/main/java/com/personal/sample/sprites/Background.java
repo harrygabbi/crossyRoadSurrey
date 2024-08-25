@@ -39,4 +39,12 @@ public class Background {
     }
 
     public Texture getTrainTrackTexture(){return TrainTrack;}
+
+    public void dispose(){
+        grassTexture.dispose();
+        roadTexture.dispose();
+        waterTexture.dispose();
+        blackbackground.dispose();
+        TrainTrack.dispose();
+    }
 }

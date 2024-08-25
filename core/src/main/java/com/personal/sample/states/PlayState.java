@@ -7,10 +7,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.personal.sample.main;
 import com.personal.sample.sprites.Background;
 import com.personal.sample.sprites.Bus;
+import com.personal.sample.sprites.Car;
 import com.personal.sample.sprites.Platform;
+import com.personal.sample.sprites.Stone;
 import com.personal.sample.sprites.character;
 import com.personal.sample.sprites.train;
 
+import java.util.Objects;
 import java.util.Vector;
 
 public class PlayState extends State {
@@ -24,11 +27,14 @@ public class PlayState extends State {
     private Vector<Bus> bus;
     private Vector<Platform> woods;
     private Vector<train> trains;
+    private Vector<Car> cars;
     private int[] map;
-    private float busvelocity = 100;
     private float woodvelocity = 30;
     private float trainvelocity = 200;
-
+    private Vector<Stone> stones;
+    private Vector<Stone> placedStones;
+    private boolean hasBirdPicked;
+    private int pickedStone;
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
@@ -38,18 +44,46 @@ public class PlayState extends State {
         charY = 0;
         bird = new character(charX, charY);
         background = new Background();
+        hasBirdPicked = false;
 
         // Set camera to follow the bird initially
 
-        map = new int[]{0, 2, 3, 2, 1, 0};
+        map = new int[]{0, 1, 2, 3, 1, 0};
         bus = new Vector<>();
         woods = new Vector<>();
         trains = new Vector<>();
+        cars = new Vector<>();
+        stones = new Vector<>();
+        placedStones = new Vector<>();
+
+        //adding Stones to the vector
+        stones.add(new Stone(240, main.HEIGHT - 60,"yellow.png"));
+        stones.add(new Stone(400, main.HEIGHT - 60,"red.png"));
+
+        placedStones.add(new Stone(240, 10,"yellow.png"));
+        placedStones.add(new Stone(400, 10,"red.png"));
+
+        //CHOOSING BACKDROP
         for (int i = 0; i < map.length; i++) {
             if (map[i] == 1) {
-                int randomNumber = -500 + random.nextInt(401);
-                Bus newBus = new Bus(randomNumber, i * 71);
-                bus.add(newBus);
+
+                    int randomNumber = -500 + random.nextInt(401);
+                    int randomNumber2 = random.nextInt(10);
+                    if (randomNumber % 2 == 0) {
+                        Bus newBus = new Bus(randomNumber, i * 71,30 + random.nextInt(100));
+                        bus.add(newBus);
+                    } else {
+                        Car newCar = new Car(randomNumber, i * 70,40 + random.nextInt(100));
+                        cars.add(newCar);
+                    }
+                    if (randomNumber2 % 2 == 0) {
+                        Bus newBus = new Bus(randomNumber - 500, i * 71,30 + random.nextInt(100));
+                        bus.add(newBus);
+                    } else {
+                        Car newCar = new Car(randomNumber - 500, i * 70,40 + random.nextInt(100));
+                        cars.add(newCar);
+                    }
+
             }
             if (map[i] == 2) {
                 float randomwidth = 60 + random.nextInt(140);
@@ -104,7 +138,7 @@ public class PlayState extends State {
         for (Platform w : woods) {
             if(w.getXpos() > main.WIDTH){
                 float randomwidth = 60 + random.nextInt(140);
-                float randomxpos = -randomwidth + random.nextInt(-100);
+                float randomxpos = -randomwidth - 300 + random.nextInt(100);
                 w.setXPosition(randomxpos);
                 w.setWidth(randomwidth);
             }
@@ -132,7 +166,7 @@ public class PlayState extends State {
         }
 
         for (Bus b : bus) {
-            b.move(dt * busvelocity);
+            b.move(dt * b.getBusspeed());
             if (b.getxPos() > main.WIDTH) {
                 int randomBusNumber = -500 + random.nextInt(301);
                 b.setXPosition(randomBusNumber);
@@ -142,14 +176,45 @@ public class PlayState extends State {
             }
         }
 
+        for(Car c: cars){
+            c.move(dt * c.getCarspeed());
+            if (c.getxPos() > main.WIDTH) {
+                int randomCarNumber = -500 + random.nextInt(201);
+                c.setXPosition(randomCarNumber);
+            }
+            if(c.collide(bird.getBounds())){
+                gsm.set(new GameOverState(gsm));
+            }
+        }
+
         for (train t : trains) {
             t.move(dt * trainvelocity);
             if (t.getxPos() > main.WIDTH) {
-                int randomTrainNumber = -700 + random.nextInt(201);
+                int randomTrainNumber = -1000 + random.nextInt(201);
                 t.setXPosition(randomTrainNumber);
             }
             if (t.collide(bird.getBounds())) {
                 gsm.set(new GameOverState(gsm));
+            }
+        }
+
+        if(!hasBirdPicked) {
+            for (Stone s : stones) {
+                if (s.collides(bird.getBounds())) {
+                    s.setPicked(true);
+                    hasBirdPicked = true;
+                    pickedStone = s.getStoneId();
+                    break;
+                }
+            }
+        }
+        else{
+            for (Stone s : placedStones) {
+                if (s.collides(bird.getBounds())) {
+                    s.setPicked(true);
+                    hasBirdPicked = false;
+                    break;
+                }
             }
         }
     }
@@ -184,25 +249,54 @@ public class PlayState extends State {
         for (Bus b : bus) {
             sb.draw(b.getBus(), b.getxPos(), b.getyPos(), 180, 60);
         }
+        for (Car c : cars) {
+            sb.draw(c.getCar(), c.getxPos(), c.getyPos(), 140, 50);
+        }
         for (Platform w : woods) {
             sb.draw(w.getWood(), w.getXpos(), w.getYpos(), w.getWidth(), 65);
         }
         for (train t : trains) {
             sb.draw(t.getTrain(), t.getxPos(), t.getyPos(), 350, 60);
         }
+
+        for(Stone s: stones){
+            if(!s.getPicked()){
+                sb.draw(s.getStone(),s.getXpos(),420-60,35,45);
+            }
+        }
+
         sb.draw(bird.getTexture(), bird.getPosition().x, bird.getPosition().y, charWidth, charHeight);
+        for(Stone s: placedStones) {
+            System.out.println(pickedStone + "   " + (s.getStoneId()-2));
+            if(s.getPicked() && (s.getStoneId()-2 ==  pickedStone)){
+                sb.draw(s.getStone(), s.getXpos(), 10, 35, 45);
+            }
+            else{
+                sb.setColor(1f, 1f, 1f, 0.5f);
+                sb.draw(s.getStone(), s.getXpos(), 10, 35, 45);
+                sb.setColor(1f, 1f, 1f, 1f);
+            }
+
+        }
         sb.end();
     }
 
     @Override
     public void dispose() {
-//        background.dispose();
-//        bird.dispose();
-//        for (Bus b : bus) {
-//            b.dispose();
-//        }
-//        for (Platform w : woods) {
-//            w.dispose();
-//        }
+        for (Bus b : bus) {
+           b.dispose();
+        }
+
+        for(Car c: cars){
+           c.dispose();
+        }
+
+        for (train t : trains) {
+            t.dispose();
+        }
+
+        for(Platform p: woods){
+            p.dispose();
+        }
     }
 }
