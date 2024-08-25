@@ -22,8 +22,8 @@ public class train {
     }
 
     public train(float x, float y){
-        train = new Texture("skytrain.jpeg");
-        bounds = new Rectangle(x,y,350,70);
+        train = new Texture("skyTrain.png");
+        bounds = new Rectangle(x,y,350,60);
         xPos = x;
         yPos = y;
     }
@@ -35,6 +35,11 @@ public class train {
     public void move(float x){
         xPos += x;
         bounds.setPosition(xPos, yPos);
+    }
+
+    public void setXPosition(float x) {
+        xPos = x;
+        bounds.setPosition(xPos,yPos);
     }
 
 }

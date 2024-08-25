@@ -37,4 +37,8 @@ public class Bus {
         bounds.setPosition(xPos, yPos);
     }
 
+    public void setXPosition(float x) {
+        xPos = x;
+        bounds.setPosition(xPos,yPos);
+    }
 }

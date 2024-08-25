@@ -25,9 +25,10 @@ public class PlayState extends State {
     private Vector<Platform> woods;
     private Vector<train> trains;
     private int[] map;
-    private float busvelocity = 50;
+    private float busvelocity = 100;
     private float woodvelocity = 30;
-    private float trainvelocity = 100;
+    private float trainvelocity = 200;
+
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
@@ -37,10 +38,8 @@ public class PlayState extends State {
         charY = 0;
         bird = new character(charX, charY);
         background = new Background();
-        cam.setToOrtho(false, main.WIDTH, main.HEIGHT);
 
         // Set camera to follow the bird initially
-        cam.position.set(charX + charWidth / 2, charY + charHeight / 2, 0);
 
         map = new int[]{0, 2, 3, 2, 1, 0};
         bus = new Vector<>();
@@ -54,9 +53,16 @@ public class PlayState extends State {
             }
             if (map[i] == 2) {
                 float randomwidth = 60 + random.nextInt(140);
+                float randomwidth2 = 60 + random.nextInt(140);
+
                 float randomxpos = -randomwidth + random.nextInt(200);
+                float randomxpos2 = -400 + random.nextInt(201) -randomxpos*3;
+
                 Platform newplat = new Platform(randomxpos, i * 70, randomwidth);
+                Platform newplat2 = new Platform(randomxpos2, i * 70, randomwidth2);
+
                 woods.add(newplat);
+                woods.add(newplat2);
             }
             if (map[i] == 3) {
                 int randomNumber = -500 + random.nextInt(401);
@@ -93,8 +99,44 @@ public class PlayState extends State {
     public void update(float dt) {
         handleInput();
 
+        boolean onPlatform = false;
+
+        for (Platform w : woods) {
+            if(w.getXpos() > main.WIDTH){
+                float randomwidth = 60 + random.nextInt(140);
+                float randomxpos = -randomwidth + random.nextInt(-100);
+                w.setXPosition(randomxpos);
+                w.setWidth(randomwidth);
+            }
+            w.move(dt * woodvelocity);
+
+            if(w.collides(bird.getBounds())){
+                onPlatform = true;
+                // Make the bird move along with the platform
+
+            }
+        }
+
+        if(onPlatform){
+            charX +=  dt * woodvelocity;
+        }
+
+        // If the bird is not on any platform and it's on the water, trigger game over
+        if (!onPlatform) {
+            for (Platform w : woods) {
+                if (bird.getPosition().y == w.getYpos()) {
+                    gsm.set(new GameOverState(gsm));
+                    break;
+                }
+            }
+        }
+
         for (Bus b : bus) {
             b.move(dt * busvelocity);
+            if (b.getxPos() > main.WIDTH) {
+                int randomBusNumber = -500 + random.nextInt(301);
+                b.setXPosition(randomBusNumber);
+            }
             if (b.collide(bird.getBounds())) {
                 gsm.set(new GameOverState(gsm));
             }
@@ -102,37 +144,21 @@ public class PlayState extends State {
 
         for (train t : trains) {
             t.move(dt * trainvelocity);
+            if (t.getxPos() > main.WIDTH) {
+                int randomTrainNumber = -700 + random.nextInt(201);
+                t.setXPosition(randomTrainNumber);
+            }
             if (t.collide(bird.getBounds())) {
                 gsm.set(new GameOverState(gsm));
             }
         }
-
-        for (Platform w : woods) {
-            w.move(dt * woodvelocity);
-            if ((w.getYpos() == bird.getPosition().y)) {
-                if (bird.getPosition().x <= (w.getXpos() - 30) || (bird.getPosition().x + 30) >= (w.getXpos() + w.getWidth())) {
-                    gsm.set(new GameOverState(gsm));
-                }
-                charX += (dt * woodvelocity);
-            }
-        }
-
-        // Update camera position to follow the bird
-        cam.position.x = main.WIDTH / 2;  // Keep camera x position in the middle
-        cam.position.y = bird.getPosition().y + charHeight / 2;
-
-        // Clamp camera within game world bounds
-        cam.position.y = Math.max(cam.viewportHeight / 2, Math.min(cam.position.y, main.HEIGHT - cam.viewportHeight / 2));
-
-        cam.update();
     }
+
 
     @Override
     public void render(SpriteBatch sb) {
 
         sb.begin();
-        cam.update();
-        sb.setProjectionMatrix(cam.combined);
 
         // Draw all the layers
         for (int x = 0; x < map.length; x++) {

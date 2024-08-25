@@ -16,7 +16,7 @@ public class Platform {
     public Platform(float x , float y,float width){
         wood = new Texture("wood.jpeg");
         this.width = width;
-        bounds = new Rectangle(x,y,width,70);
+        bounds = new Rectangle(x + 25,y,width-25,70);
         xpos = x;
         ypos = y;
     }
@@ -24,6 +24,11 @@ public class Platform {
     public void move(float x){
         xpos += x;
         bounds.setPosition(xpos,ypos);
+    }
+
+    public void setWidth(float x){
+        width = x;
+        bounds.setWidth(width-25);
     }
 
     public Texture getWood() {
@@ -45,5 +50,11 @@ public class Platform {
     public float getWidth() {
         return width;
     }
+
+    public void setXPosition(float x) {
+        xpos = x;
+        bounds.setPosition(xpos+25,ypos);
+    }
+
 }
 
