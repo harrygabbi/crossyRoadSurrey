@@ -34,7 +34,8 @@ public class PlayState extends State {
     private Vector<Stone> stones;
     private Vector<Stone> placedStones;
     private boolean hasBirdPicked;
-    private int pickedStone;
+    private String pickedStone;
+
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
@@ -46,7 +47,6 @@ public class PlayState extends State {
         background = new Background();
         hasBirdPicked = false;
 
-        // Set camera to follow the bird initially
 
         map = new int[]{0, 1, 2, 3, 1, 0};
         bus = new Vector<>();
@@ -203,7 +203,7 @@ public class PlayState extends State {
                 if (s.collides(bird.getBounds())) {
                     s.setPicked(true);
                     hasBirdPicked = true;
-                    pickedStone = s.getStoneId();
+                    pickedStone = s.getImagepath();
                     break;
                 }
             }
@@ -266,17 +266,23 @@ public class PlayState extends State {
         }
 
         sb.draw(bird.getTexture(), bird.getPosition().x, bird.getPosition().y, charWidth, charHeight);
-        for(Stone s: placedStones) {
-            System.out.println(pickedStone + "   " + (s.getStoneId()-2));
-            if(s.getPicked() && (s.getStoneId()-2 ==  pickedStone)){
-                sb.draw(s.getStone(), s.getXpos(), 10, 35, 45);
-            }
-            else{
-                sb.setColor(1f, 1f, 1f, 0.5f);
-                sb.draw(s.getStone(), s.getXpos(), 10, 35, 45);
-                sb.setColor(1f, 1f, 1f, 1f);
+        for (Stone s : placedStones) {
+            // Check if the stone collides with the bird and matches the picked stone
+            if (s.collides(bird.getBounds()) && Objects.equals(s.getImagepath(), pickedStone)) {
+                s.setPlaced(true);  // Mark this stone as placed
+                pickedStone = null;  // Reset pickedStone after placing
+                hasBirdPicked = false;  // Allow the bird to pick another stone
             }
 
+            // Draw the stone with full opacity if placed, otherwise with half opacity
+            if (s.isPlaced()) {
+                sb.setColor(1f, 1f, 1f, 1f);  // Full opacity for placed stones
+            } else {
+                sb.setColor(1f, 1f, 1f, 0.5f);  // Half opacity for unplaced stones
+            }
+
+            sb.draw(s.getStone(), s.getXpos(), 10, 35, 45);
+            sb.setColor(1f, 1f, 1f, 1f);  // Reset color to full opacity for other draws
         }
         sb.end();
     }

@@ -8,6 +8,7 @@ public class Stone {
     private Rectangle bounds;
     private float xpos;
     private boolean isPicked;
+    private boolean isPlaced;
     private String imagepath;
     private int stoneId;
     static int id = 1;
@@ -19,6 +20,7 @@ public class Stone {
         bounds = new Rectangle(x + 25,y,10,10);
         xpos = x;
         isPicked = false;
+        isPlaced = false;
         this.imagepath = imagePath;
         stoneId = id;
         id++;
@@ -65,4 +67,10 @@ public class Stone {
         wood.dispose();
     }
 
+    public boolean isPlaced() {
+        return isPlaced;
+    }
+    public void setPlaced(boolean x){
+        isPlaced = x;
+    }
 }
